@@ -2,7 +2,7 @@ import operator as op
 from collections import namedtuple
 
 # operation tree structure
-Tree = namedtuple("Expr", ["left", "right", "op"])
+Tree = namedtuple("Tree", ["left", "right", "op"])
 
 
 # evaluates tree
@@ -105,8 +105,8 @@ def use_parentheses(tree_arr):
     right_par = find_closing_par(tree_arr, left_par)
     left, inside, right = (
         tree_arr[:left_par],
-        tree_arr[left_par + 1: right_par],
-        tree_arr[right_par + 1:],
+        tree_arr[left_par + 1 : right_par],
+        tree_arr[right_par + 1 :],
     )
     return (
         use_parentheses(left)
@@ -122,7 +122,7 @@ def parse_string(inp):
     out = []
     for i in inp:
         if i.isdigit() or i == ".":
-            if out and (out[-1][-1].isdigit() or out[-1][-1] == '.'):
+            if out and (out[-1][-1].isdigit() or out[-1][-1] == "."):
                 out[-1] = out[-1] + i
             else:  # appand new expr_arr
                 out.append(i)
