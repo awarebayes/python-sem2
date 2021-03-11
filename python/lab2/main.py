@@ -1,15 +1,22 @@
 import tkinter as tk
 import random
-from toolz.curried import map as cmap
-from toolz import compose
+# from toolz.curried import map as cmap
+#from toolz import compose
 from functools import partial
 import timeit
 
-# Functions and static
+def cmap(x):
+   return lambda a: map(x, a)
 
-N1 = 10 ** 1
-N2 = 10 ** 2
-N3 = 10 ** 3
+def compose (*functions):
+    def inner(arg):
+        for f in reversed(functions):
+            arg = f(arg)
+        return arg
+    return inner
+
+
+# Functions and static
 
 time = partial(timeit.timeit, number=1)
 
@@ -27,24 +34,13 @@ def barrier_sort(arr):
 
 
 def yield_cells(rows, padding=2):
-    col_lens = max_col_len(rows)
-    formatters = ["{:" + str(cl) + "}" for cl in col_lens]
     for row in rows:
-        for col, fmt in zip(row, formatters):
-            text = ' '*padding + fmt.format(col) + ' '*padding
-            cell = tk.Label(text=text, font="Inconsolata 12")
+        for col in row:
+            if isinstance(col, tk.StringVar):
+                cell = tk.Label(textvariable=col, font="Inconsolata 12")
+            else: 
+                cell = tk.Label(text=col, font="Inconsolata 12")
             yield cell
-
-
-# return maximum len for each column
-def max_col_len(rows):
-    col_len = [0 for i in rows]
-    n_rows = len(rows)
-    n_cols = len(rows[0])
-    for row in range(n_rows):
-        for col in range(n_cols):
-            col_len[col] = max(col_len[col], len(rows[row][col]))
-    return col_len
 
 
 def gen_table(rows, grid_start_row, grid_start_col):
@@ -89,11 +85,24 @@ def serialize_int_list(arr):
 
 
 # gen func is a generator for array to sort
-def time_test(gen_func):
-    arrays = map(gen_func, [N1, N2, N3])
-    times = [sort_time(a) for a in arrays]
-    return map("{:.3e}".format, times)
+def time_test(gen_func, callbacks):
 
+    arr_small = unsorted_var.get()
+    arr_small = list(map(int, arr_small.split()))
+    sorted = serialize_int_list(barrier_sort(arr_small))
+    sorted_var.set(sorted)
+    
+    n1, n2, n3 = map(compose(int, lambda x: x.get()), [N1, N2, N3])
+    arrays = map(gen_func, [n1, n2, n3])
+    for a, cb in zip(arrays, callbacks):
+        times = sort_time(a)
+        times_fmt = "{:.3e}".format(times)
+        cb.set(times_fmt)
+
+def test_all():
+    for f, cb in zip([random_arr, sorted_arr, reversed_sorted_arr],
+                 callback):
+        time_test(f, cb)        
 
 arr_small = random_arr(10)
 
@@ -101,22 +110,50 @@ arr_small = random_arr(10)
 root = tk.Tk()
 root.title("Calculator")
 
-unsorted_text = "Unsorted:  " + serialize_int_list(arr_small)
-unsorted_label = tk.Label(text=unsorted_text, font="Inconsolata 14")
-unsorted_label.grid(column=0, row=0)
 
-sorted_text = "Sorted:    " + serialize_int_list(barrier_sort(arr_small))
+N1 = tk.StringVar()
+N2 = tk.StringVar()
+N3 = tk.StringVar()
+
+random_res = [tk.StringVar() for i in range(3)]
+sorted_res = [tk.StringVar() for i in range(3)]
+reversed_res = [tk.StringVar() for i in range(3)]
+callback = [random_res, sorted_res, reversed_res]
+
+ns = [N1, N2, N3]
+for i in range(3):
+    l = tk.Label(text=f"N{i}: ", font="Inconsolata 14")
+    l.grid(row=i, column=0)
+    e = tk.Entry(textvariable=ns[i], font="Inconsolata 14")
+    e.grid(row=i, column=1, columnspan=2)
+
+unsorted_var = tk.StringVar()
+unsorted_input = tk.Entry(textvariable=unsorted_var, font="Inconsolata 14")
+
+unsorted_text = "Unsorted:  "
+unsorted_label = tk.Label(text=unsorted_text, font="Inconsolata 14")
+unsorted_label.grid(column=0, row=3)
+
+sorted_text = "Sorted:    " 
 sorted_label = tk.Label(text=sorted_text, font="Inconsolata 14")
-sorted_label.grid(column=0, row=1)
+sorted_label.grid(column=0, row=4)
+
+sorted_var = tk.StringVar()
+sorted_label = tk.Label(textvariable=sorted_var, font="Inconsolata 14")
+sorted_label.grid(column=1, row=4)
+
+
+
+generate = tk.Button(command=test_all, text="Generate Table", font="Inconsolata 14")
+generate.grid(row=5, column=0)
 
 table = [
-    ["-", *map(str, [N1, N2, N3])],
-    ["Рандомный массив", *time_test(random_arr)],
-    ["Упорядоченный массив", *time_test(sorted_arr)],
-    ["Обратно упорядоченный массив", *time_test(reversed_sorted_arr)],
+    ["-", N1, N2, N3],
+    ["Рандомный массив", *random_res],
+    ["Упорядоченный массив", *sorted_res],
+    ["Обратно упорядоченный массив", *reversed_res],
 ]
 
-
-gen_table(table, 2, 0)
+gen_table(table, 6, 0)
 
 root.mainloop()
