@@ -1,24 +1,8 @@
 import tkinter as tk
 import random
-# from toolz.curried import map as cmap
-#from toolz import compose
 from functools import partial
 import timeit
 
-def cmap(x):
-   return lambda a: map(x, a)
-
-def compose (*functions):
-    def inner(arg):
-        for f in reversed(functions):
-            arg = f(arg)
-        return arg
-    return inner
-
-
-# Functions and static
-
-time = partial(timeit.timeit, number=1)
 
 # Sorting algorithm
 def barrier_sort(arr):
@@ -33,6 +17,22 @@ def barrier_sort(arr):
     return arr[1:]
 
 
+# Utility
+
+time = partial(timeit.timeit, number=1)
+
+def cmap(x):
+   return lambda a: map(x, a)
+
+def compose (*functions):
+    def inner(arg):
+        for f in reversed(functions):
+            arg = f(arg)
+        return arg
+    return inner
+
+# UI
+
 def yield_cells(rows, padding=2):
     for row in rows:
         for col in row:
@@ -41,7 +41,6 @@ def yield_cells(rows, padding=2):
             else: 
                 cell = tk.Label(text=col, font="Inconsolata 12")
             yield cell
-
 
 def gen_table(rows, grid_start_row, grid_start_col):
     n_rows = len(rows)
@@ -72,7 +71,7 @@ def reversed_sorted_arr(size):
     return list(reversed(sorted_arr(size)))
 
 
-# Util functions:
+# Util functions x2:
 def sort_time(arr):
     return time(lambda: barrier_sort(arr))
 
@@ -84,14 +83,11 @@ def serialize_int_list(arr):
     return pipe(arr)
 
 
+
+
+
 # gen func is a generator for array to sort
 def time_test(gen_func, callbacks):
-
-    arr_small = unsorted_var.get()
-    arr_small = list(map(int, arr_small.split()))
-    sorted = serialize_int_list(barrier_sort(arr_small))
-    sorted_var.set(sorted)
-    
     n1, n2, n3 = map(compose(int, lambda x: x.get()), [N1, N2, N3])
     arrays = map(gen_func, [n1, n2, n3])
     for a, cb in zip(arrays, callbacks):
@@ -99,10 +95,17 @@ def time_test(gen_func, callbacks):
         times_fmt = "{:.3e}".format(times)
         cb.set(times_fmt)
 
-def test_all():
+def sort_callback():
+    arr_small = unsorted_var.get()
+    arr_small = list(map(int, arr_small.split()))
+    sorted = serialize_int_list(barrier_sort(arr_small))
+    sorted_var.set(sorted)
+
+
+def generate_callback():
     for f, cb in zip([random_arr, sorted_arr, reversed_sorted_arr],
                  callback):
-        time_test(f, cb)        
+        time_test(f, cb)
 
 arr_small = random_arr(10)
 
@@ -127,25 +130,30 @@ for i in range(3):
     e = tk.Entry(textvariable=ns[i], font="Inconsolata 14")
     e.grid(row=i, column=1, columnspan=2)
 
+generate = tk.Button(command=generate_callback, text="Generate Table", font="Inconsolata 14")
+generate.grid(row=3, column=0)
+
+
 unsorted_var = tk.StringVar()
 unsorted_input = tk.Entry(textvariable=unsorted_var, font="Inconsolata 14")
+unsorted_input.grid(column=1, row=4, columnspan=2)
 
 unsorted_text = "Unsorted:  "
 unsorted_label = tk.Label(text=unsorted_text, font="Inconsolata 14")
-unsorted_label.grid(column=0, row=3)
+unsorted_label.grid(column=0, row=4)
+
 
 sorted_text = "Sorted:    " 
 sorted_label = tk.Label(text=sorted_text, font="Inconsolata 14")
-sorted_label.grid(column=0, row=4)
+sorted_label.grid(column=0, row=5)
 
 sorted_var = tk.StringVar()
 sorted_label = tk.Label(textvariable=sorted_var, font="Inconsolata 14")
-sorted_label.grid(column=1, row=4)
+sorted_label.grid(column=1, row=5)
 
 
-
-generate = tk.Button(command=test_all, text="Generate Table", font="Inconsolata 14")
-generate.grid(row=5, column=0)
+sort = tk.Button(command=sort_callback, text='Sort', font='Inconsolata 14')
+sort.grid(column=0, row=6)
 
 table = [
     ["-", N1, N2, N3],
@@ -154,6 +162,6 @@ table = [
     ["Обратно упорядоченный массив", *reversed_res],
 ]
 
-gen_table(table, 6, 0)
+gen_table(table, 7, 0)
 
 root.mainloop()
