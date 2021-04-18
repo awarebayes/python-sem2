@@ -21,26 +21,32 @@ def barrier_sort(arr):
 
 time = partial(timeit.timeit, number=1)
 
-def cmap(x):
-   return lambda a: map(x, a)
 
-def compose (*functions):
+def cmap(x):
+    return lambda a: map(x, a)
+
+
+def compose(*functions):
     def inner(arg):
         for f in reversed(functions):
             arg = f(arg)
         return arg
+
     return inner
 
+
 # UI
+
 
 def yield_cells(rows, padding=2):
     for row in rows:
         for col in row:
             if isinstance(col, tk.StringVar):
                 cell = tk.Label(textvariable=col, font="Inconsolata 12")
-            else: 
+            else:
                 cell = tk.Label(text=col, font="Inconsolata 12")
             yield cell
+
 
 def gen_table(rows, grid_start_row, grid_start_col):
     n_rows = len(rows)
@@ -50,9 +56,7 @@ def gen_table(rows, grid_start_row, grid_start_col):
         col = grid_start_col + idx % n_cols
         row = grid_start_row + idx // n_rows
         idx += 1
-        cell.grid(
-            column=col, row=row
-        )
+        cell.grid(column=col, row=row)
 
 
 # Generators:
@@ -83,9 +87,6 @@ def serialize_int_list(arr):
     return pipe(arr)
 
 
-
-
-
 # gen func is a generator for array to sort
 def time_test(gen_func, callbacks):
     n1, n2, n3 = map(compose(int, lambda x: x.get()), [N1, N2, N3])
@@ -95,6 +96,7 @@ def time_test(gen_func, callbacks):
         times_fmt = "{:.3e}".format(times)
         cb.set(times_fmt)
 
+
 def sort_callback():
     arr_small = unsorted_var.get()
     arr_small = list(map(int, arr_small.split()))
@@ -103,9 +105,9 @@ def sort_callback():
 
 
 def generate_callback():
-    for f, cb in zip([random_arr, sorted_arr, reversed_sorted_arr],
-                 callback):
+    for f, cb in zip([random_arr, sorted_arr, reversed_sorted_arr], callback):
         time_test(f, cb)
+
 
 arr_small = random_arr(10)
 
@@ -130,7 +132,9 @@ for i in range(3):
     e = tk.Entry(textvariable=ns[i], font="Inconsolata 14")
     e.grid(row=i, column=1, columnspan=2)
 
-generate = tk.Button(command=generate_callback, text="Generate Table", font="Inconsolata 14")
+generate = tk.Button(
+    command=generate_callback, text="Generate Table", font="Inconsolata 14"
+)
 generate.grid(row=3, column=0)
 
 
@@ -143,7 +147,7 @@ unsorted_label = tk.Label(text=unsorted_text, font="Inconsolata 14")
 unsorted_label.grid(column=0, row=4)
 
 
-sorted_text = "Sorted:    " 
+sorted_text = "Sorted:    "
 sorted_label = tk.Label(text=sorted_text, font="Inconsolata 14")
 sorted_label.grid(column=0, row=5)
 
@@ -152,7 +156,7 @@ sorted_label = tk.Label(textvariable=sorted_var, font="Inconsolata 14")
 sorted_label.grid(column=1, row=5)
 
 
-sort = tk.Button(command=sort_callback, text='Sort', font='Inconsolata 14')
+sort = tk.Button(command=sort_callback, text="Sort", font="Inconsolata 14")
 sort.grid(column=0, row=6)
 
 table = [
