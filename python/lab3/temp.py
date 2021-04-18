@@ -71,13 +71,14 @@ import numpy as np
 np.roll(np.arange(-10, 10, 0.2), 3)
 # %%
 
+
 def extemum(arr):
-    for i in range(1, len(arr-1)):
-        if arr[i-1] > arr[i] < arr[i+1] or \
-           arr[i-1] < arr[i] > arr[i+1]:
+    for i in range(1, len(arr - 1)):
+        if arr[i - 1] > arr[i] < arr[i + 1] or arr[i - 1] < arr[i] > arr[i + 1]:
             yield i
+
 
 # %%
 
-np.take(nбббббббббp.array([1,2,3,4,5]), [1,2])
+np.take(nбббббббббp.array([1, 2, 3, 4, 5]), [1, 2])
 # %%

@@ -1,5 +1,5 @@
 # y = sin x
-# newton 
+# newton
 # >> a, b (-2, 2)
 # find root, no plot
 
@@ -14,16 +14,18 @@ eps = 0.001
 def newton(a, b):
     x = (a + b) / 2
     print(x, f(x))
-    while (abs(f(x)) > eps):
+    while abs(f(x)) > eps:
         print(x, f(x))
-        x = x - f(x)/f_dx(x)
+        x = x - f(x) / f_dx(x)
     return x
+
 
 def root_callback():
     a = float(a_var.get())
     b = float(b_var.get())
     res = newton(a, b)
     res_var.set(res)
+
 
 root = tk.Tk()
 root.title("Lab 3")
@@ -52,4 +54,3 @@ calc_button = tk.Button(text="Calc", command=root_callback, font="Inconsolata 14
 calc_button.grid(row=4)
 
 root.mainloop()
-    

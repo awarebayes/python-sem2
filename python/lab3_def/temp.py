@@ -1,5 +1,5 @@
 # y = sin x
-# newton 
+# newton
 # >> a, b (-2, 2)
 # find root, no plot
 
@@ -13,8 +13,8 @@ eps = 0.001
 
 def newton(a, b):
     x = (a + b) / 2
-    while (abs(f(x)) > eps):
-        x = x - f(x)/f_dx(x)
+    while abs(f(x)) > eps:
+        x = x - f(x) / f_dx(x)
     return x
 
 

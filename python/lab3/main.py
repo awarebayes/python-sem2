@@ -48,11 +48,12 @@ def root_info(a, b, s, eps, until):
 
         root_n += 1
 
+
 def extremums(arr):
-    for i in range(1, len(arr)-1):
-        if arr[i-1] > arr[i] < arr[i+1] or \
-           arr[i-1] < arr[i] > arr[i+1]:
+    for i in range(1, len(arr) - 1):
+        if arr[i - 1] > arr[i] < arr[i + 1] or arr[i - 1] < arr[i] > arr[i + 1]:
             yield i
+
 
 ### TKINTER
 
@@ -97,8 +98,10 @@ def multiple_input_form(labels, vars, row_start, col_start):
         e.grid(column=col_start + 1, row=row_start + n)
         n += 1
 
+
 def get_vars():
     return map(float, map(tk.StringVar.get, [a_var, b_var, s_var, eps_var]))
+
 
 def regen_table():
     a, b, s, eps = get_vars()
@@ -107,8 +110,10 @@ def regen_table():
     table = [["Root n", "[x_i, x_{i+1}]", "x", "f(x)", "N ITER", "Error"], *info]
     gen_table(table, 8, 0)
 
+
 def show_plot():
     import matplotlib.pyplot as plt
+
     a, b, s, _ = get_vars()
     x = np.arange(a, b, s)
     y = f_x(x)
@@ -129,14 +134,18 @@ a_var = tk.StringVar()
 b_var = tk.StringVar()
 s_var = tk.StringVar()
 eps_var = tk.StringVar()
-until_var = tk.StringVar(value='f')
+until_var = tk.StringVar(value="f")
 
 multiple_input_form(
     ["Start", "End", "Step", "Epsilon"], [a_var, b_var, s_var, eps_var], 0, 0
 )
 
-until_f = tk.Radiobutton(text="abs(f) > eps", value="f", variable=until_var, font="Inconsolata 14")
-until_g = tk.Radiobutton(text="abs(g(x)-x) > eps", value="g", variable=until_var, font="Inconsolata 14")
+until_f = tk.Radiobutton(
+    text="abs(f) > eps", value="f", variable=until_var, font="Inconsolata 14"
+)
+until_g = tk.Radiobutton(
+    text="abs(g(x)-x) > eps", value="g", variable=until_var, font="Inconsolata 14"
+)
 until_f.grid(row=5, column=0)
 until_g.grid(row=5, column=1)
 
