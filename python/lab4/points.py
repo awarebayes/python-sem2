@@ -10,9 +10,7 @@
 import tkinter as tk
 from dataclasses import dataclass
 from typing import Optional
-
-root = tk.Tk()
-root.title("IdkIdk")
+from visualizer import Visualizer
 
 
 @dataclass
@@ -99,9 +97,9 @@ class PointField:
             return Point(x, y)
         except ValueError:
             return None
-        
+
     def set(self, p: Point):
-        self.x = p.x 
+        self.x = p.x
         self.y = p.y
         self.x_var.set(str(p.x))
         self.y_var.set(str(p.y))
@@ -123,16 +121,26 @@ class PointField:
         self.manager.delete(self.n)
 
 
-pm = PointManager()
-pm.add()
-pm.add_initialized(Point(3, 4))
-pm.add()
-pm.show()
+class PointManagerWindow:
+    def __init__(self, master: tk.Tk):
+        self.master = master
+        self.master.title("PointManager")
+        self.manager = PointManager()
 
-get_btn = tk.Button(text="get_points", command=lambda: print(list(pm.get())))
-get_btn.grid(row=0, column=0)
+        self.get_btn = tk.Button(self.master, text="print_points", command=lambda: print(list(self.manager.get())))
+        self.get_btn.grid(row=0, column=0)
 
-add_btn = tk.Button(text="add_point", command=pm.add)
-add_btn.grid(row=0, column=1)
+        self.add_btn = tk.Button(self.master, text="add_point", command=self.manager.add)
+        self.add_btn.grid(row=0, column=1)
 
-root.mainloop()
+        self.update_btn = tk.Button(self.master, text="redraw points", command=self.redraw_points)
+        self.update_btn.grid(row=0, column=1)
+
+        self.open_visualizer()
+    
+    def open_visualizer(self):
+        self.visualizer_window = tk.Toplevel(self.master)
+        self.visualizer = Visualizer(self.visualizer_window, self.manager)
+    
+    def redraw_points(self):
+        self.visualizer.redraw_points()
